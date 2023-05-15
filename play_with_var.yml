@@ -1,0 +1,45 @@
+---
+#create user
+#
+- hosts: devserver
+  become: yes
+  ignore_errors: yes 
+  vars:
+    pkg_name: httpd
+    username: rector  
+  tasks:
+    - name: Creating user
+      user:
+        name: "{{username}}"
+        comment: rector koffi
+        shell: /bin/bash
+#          
+#Run if os is dRedHat
+      when: ansible_os_family == "RedHat"
+
+    - name: Creating file
+      file:
+        path: /tmp/ansible.txt
+        state: touch
+        mode : '0600'
+
+    - name: Creating directory
+      file:
+        path: /tmp/dir/
+        state: directory
+        mode: '0777'
+
+    - name: install apache
+      yum:
+        name: "{{pkg_name}}"
+        state: present    
+
+    - name: install finger and more
+      package:
+        name: {{ item }}
+        state: present
+      with_items:
+          - wget
+          - samba
+          - java-8*
+          - finger 
